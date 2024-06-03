@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка бонусных баллов</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #0e0e10;
+            color: #ffffff;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            background: #18181b;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            animation: slideIn 1s ease-out;
+        }
+        h1 {
+            color: #9146ff;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            animation: fadeIn 2s ease-in-out;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-size: 16px;
+            color: #adadb8;
+            text-align: left;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #717171;
+            border-radius: 5px;
+            box-sizing: border-box;
+            background-color: #0e0e10;
+            color: #ffffff;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #9146ff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #772ce8;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #ffffff;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aimer</h1>
+        <label for="phoneNumber">Введите номер телефона:</label>
+        <input type="text" id="phoneNumber" name="phoneNumber">
+        <button onclick="checkServiceAvailability()">Проверить доступность сервиса</button>
+        <button onclick="getBonusPoints()">Проверить бонусные баллы</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function checkServiceAvailability() {
+            const url = 'http://ptr-74/aimer/hs/marketing/v1/check';
+            const options = {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Basic ' + btoa('WEB:123')
+                }
+            };
+
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                document.getElementById('result').innerText = 'Сервис доступен';
+                document.getElementById('result').style.animation = 'fadeIn 1s ease-in-out';
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+                document.getElementById('result').innerText = 'Сервис недоступен';
+                document.getElementById('result').style.animation = 'fadeIn 1s ease-in-out';
+            }
+        }
+
+        async function getBonusPoints() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const url = `http://ptr-74/aimer/hs/marketing/v1/remainingBonusPoints?phoneNumber=${phoneNumber}`;
+            const options = {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Basic ' + btoa('WEB:123')
+                }
+            };
+
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('result').innerText = `Остаток бонусных баллов: ${data}`;
+                } else {
+                    document.getElementById('result').innerText = `Ошибка: ${data.result}`;
+                }
+                document.getElementById('result').style.animation = 'fadeIn 1s ease-in-out';
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+                document.getElementById('result').innerText = 'Ошибка при получении данных';
+                document.getElementById('result').style.animation = 'fadeIn 1s ease-in-out';
+            }
+        }
+        
+    </script>
+</body>
+</html>
